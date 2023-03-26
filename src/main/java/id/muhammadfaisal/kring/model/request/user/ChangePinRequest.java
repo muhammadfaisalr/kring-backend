@@ -2,7 +2,7 @@ package id.muhammadfaisal.kring.model.request.user;
 
 public class ChangePinRequest {
     private long userId;
-    private String oldPin;
+    private String currentPin;
     private String pin;
     private String pinConfirmed;
 
@@ -10,20 +10,16 @@ public class ChangePinRequest {
         return userId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
     public void setUserId(long userId) {
         this.userId = userId;
     }
 
-    public String getOldPin() {
-        return oldPin;
+    public String getCurrentPin() {
+        return currentPin;
     }
 
-    public void setOldPin(String oldPin) {
-        this.oldPin = oldPin;
+    public void setCurrentPin(String currentPin) {
+        this.currentPin = currentPin;
     }
 
     public String getPin() {

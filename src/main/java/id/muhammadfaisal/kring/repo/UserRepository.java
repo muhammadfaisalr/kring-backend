@@ -18,4 +18,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query(value = "SELECT * FROM m_user WHERE pin = :pin AND id = :userId", nativeQuery = true)
     public BigInteger verifyPin(String pin, int userId);
+
+    @Query(value = "SELECT * FROM m_user WHERE email = :identifier OR phone = :identifier", nativeQuery = true)
+    public UserEntity findByIdentifier(String identifier);
 }

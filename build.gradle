@@ -18,7 +18,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	implementation group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0'
-	implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.0'
+	implementation group: 'org.postgresql', name: 'postgresql', version: 	 '42.5.0'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

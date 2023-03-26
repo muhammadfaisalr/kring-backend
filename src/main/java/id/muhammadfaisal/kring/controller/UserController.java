@@ -2,10 +2,7 @@ package id.muhammadfaisal.kring.controller;
 
 import id.muhammadfaisal.kring.entity.UserEntity;
 import id.muhammadfaisal.kring.helper.Messages;
-import id.muhammadfaisal.kring.model.request.user.ChangePinRequest;
-import id.muhammadfaisal.kring.model.request.user.GeneratePinRequest;
-import id.muhammadfaisal.kring.model.request.user.RegisterRequest;
-import id.muhammadfaisal.kring.model.request.user.VerifyPinRequest;
+import id.muhammadfaisal.kring.model.request.user.*;
 import id.muhammadfaisal.kring.model.response.BaseResponse;
 import id.muhammadfaisal.kring.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +27,9 @@ public class UserController {
 
         UserEntity userEntity = new UserEntity();
         userEntity.setName(registerRequest.getName());
-        userEntity.setAddress(registerRequest.getAddress());
         userEntity.setPhone(registerRequest.getPhone());
-        userEntity.setCityId(registerRequest.getCityId());
+        userEntity.setEmail(registerRequest.getEmail());
+        userEntity.setPassword(registerRequest.getPassword());
         userEntity.setCreateBy("SYSTEM");
         userEntity.setCreateDate(String.valueOf(LocalDateTime.now()));
 
@@ -53,6 +50,31 @@ public class UserController {
             }
         }
 
+
+        return ResponseEntity.ok().body(baseResponse);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<BaseResponse> login(@Validated @RequestBody LoginRequest request) {
+        BaseResponse baseResponse = BaseResponse.success();
+
+        try {
+            UserEntity entity = this.userRepository.findByIdentifier(request.getIdentifier());
+
+            if (entity.getPassword().equals(request.getPassword())) {
+                baseResponse.setCode(200);
+                baseResponse.setMessage("Berhasil Login");
+                baseResponse.setData(entity);
+            } else {
+                baseResponse.setCode(401);
+                baseResponse.setMessage("Password yang anda masukkan salah.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            baseResponse.setCode(500);
+            baseResponse.setMessage(e.getMessage());
+            return ResponseEntity.ok().body(baseResponse);
+        }
 
         return ResponseEntity.ok().body(baseResponse);
     }
@@ -95,7 +117,7 @@ public class UserController {
 
                userEntity.setPin(generatePinRequest.getPin());
                userEntity.setModifiedBy("SYSTEM");
-               userEntity.setModifiedBy(String.valueOf(LocalDateTime.now()));
+               userEntity.setModifiedDate(String.valueOf(LocalDateTime.now()));
                this.userRepository.save(userEntity);
            } else {
                baseResponse.setCode(401);
@@ -111,27 +133,29 @@ public class UserController {
         return ResponseEntity.ok().body(baseResponse);
     }
 
-    @PostMapping("/update-pin")
-    public ResponseEntity<BaseResponse> changePin(@Validated @RequestBody ChangePinRequest changePinRequest) {
+    @PostMapping("/change-pin")
+    public ResponseEntity<BaseResponse> updatePin(@Validated @RequestBody ChangePinRequest request) {
         BaseResponse baseResponse = BaseResponse.success();
 
         try {
-            Optional<UserEntity> optionalUserEntity = this.userRepository.findById(changePinRequest.getUserId());
+            Optional<UserEntity> optionalUserEntity = this.userRepository.findById(request.getUserId());
 
             if (optionalUserEntity.isPresent()) {
                 UserEntity userEntity = optionalUserEntity.get();
 
-                if (!changePinRequest.getOldPin().equals(changePinRequest.getPin())) {
+               if (!request.getCurrentPin().equals(userEntity.getPin())) {
                     baseResponse.setCode(401);
                     baseResponse.setMessage(Messages.Error.OLD_PIN_WRONG);
+                    return ResponseEntity.ok().body(baseResponse);
                 }
 
-                if (!changePinRequest.getPin().equals(changePinRequest.getPinConfirmed())) {
+                if (!request.getPin().equals(request.getPinConfirmed())) {
                     baseResponse.setCode(400);
                     baseResponse.setMessage("Pin yang dikonfirmasi tidak sama.");
+                    return ResponseEntity.ok().body(baseResponse);
                 }
 
-                userEntity.setPin(changePinRequest.getPin());
+                userEntity.setPin(request.getPin());
                 userEntity.setModifiedBy("SYSTEM");
                 userEntity.setModifiedBy(String.valueOf(LocalDateTime.now()));
 
@@ -145,7 +169,6 @@ public class UserController {
             baseResponse.setCode(500);
             baseResponse.setMessage(Messages.Error.BASE_ERROR);
         }
-
         return ResponseEntity.ok().body(baseResponse);
     }
 

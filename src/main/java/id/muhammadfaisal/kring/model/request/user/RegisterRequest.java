@@ -4,16 +4,8 @@ public class RegisterRequest {
     private String name;
     private long phone;
     private String password;
-    private String address;
-    private int cityId;
+    private String email;
 
-    public long getPhone() {
-        return phone;
-    }
-
-    public void setPhone(long phone) {
-        this.phone = phone;
-    }
 
     public String getName() {
         return name;
@@ -21,6 +13,14 @@ public class RegisterRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public long getPhone() {
+        return phone;
+    }
+
+    public void setPhone(long phone) {
+        this.phone = phone;
     }
 
     public String getPassword() {
@@ -31,19 +31,11 @@ public class RegisterRequest {
         this.password = password;
     }
 
-    public String getAddress() {
-        return address;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public int getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(int cityId) {
-        this.cityId = cityId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
