@@ -61,6 +61,12 @@ public class UserController {
         try {
             UserEntity entity = this.userRepository.findByIdentifier(request.getIdentifier());
 
+            if (entity == null) {
+                baseResponse.setCode(404);
+                baseResponse.setMessage("Email/No. HP Belum terdaftar, ingin lanjutkan dengan mendaftar?");
+                return ResponseEntity.ok().body(baseResponse);
+            }
+
             if (entity.getPassword().equals(request.getPassword())) {
                 baseResponse.setCode(200);
                 baseResponse.setMessage("Berhasil Login");
