@@ -2,10 +2,12 @@ package id.muhammadfaisal.kring.controller;
 
 import id.muhammadfaisal.kring.entity.UserEntity;
 import id.muhammadfaisal.kring.helper.Messages;
+import id.muhammadfaisal.kring.helper.SessionHelper;
 import id.muhammadfaisal.kring.model.request.user.*;
 import id.muhammadfaisal.kring.model.response.BaseResponse;
 import id.muhammadfaisal.kring.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    public Environment environment;
 
     @PostMapping("/register")
     public ResponseEntity<BaseResponse> register(@Validated @RequestBody RegisterRequest registerRequest) {
@@ -57,6 +62,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<BaseResponse> login(@Validated @RequestBody LoginRequest request) {
         BaseResponse baseResponse = BaseResponse.success();
+        SessionHelper sessionHelper = new SessionHelper();
 
         try {
             UserEntity entity = this.userRepository.findByIdentifier(request.getIdentifier());
@@ -70,6 +76,12 @@ public class UserController {
             if (entity.getPassword().equals(request.getPassword())) {
                 baseResponse.setCode(200);
                 baseResponse.setMessage("Berhasil Login");
+
+                //Generate Session Section
+                String session = sessionHelper.generateSession(environment, request.getIdentifier());
+                entity.setSession(session);
+                this.updateSession(session, entity.getId());
+
                 baseResponse.setData(entity);
             } else {
                 baseResponse.setCode(401);
@@ -83,6 +95,10 @@ public class UserController {
         }
 
         return ResponseEntity.ok().body(baseResponse);
+    }
+
+    private void updateSession(String session, long uid) {
+        this.userRepository.updateSession(session, uid);
     }
 
     @GetMapping("/{id}")

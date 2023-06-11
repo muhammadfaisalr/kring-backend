@@ -43,6 +43,9 @@ public class UserEntity extends BaseEntity {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "session")
+    private String session;
+
     public long getId() {
         return id;
     }
@@ -136,5 +139,13 @@ public class UserEntity extends BaseEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getSession() {
+        return session;
+    }
+
+    public void setSession(String session) {
+        this.session = session;
     }
 }
